@@ -8,6 +8,7 @@ This file creates your application.
 from app import app
 from flask import render_template, request, jsonify, send_file, Flask, redirect, url_for, flash
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 import os
 
 from app import db
@@ -110,6 +111,36 @@ def movies():
         }), 400
 
         # flash('Successfully added')
+
+@app.route('/api/v1/movies', methods=['GET'])
+def get_movies():
+    movies = Movie.query.all()
+    movie_list = []
+
+    for movie in movies:
+        movie_data = {
+            "id": movie.id,
+            "title": movie.title,
+            "description": movie.description,
+            "poster": f"/api/v1/posters/{movie.poster}"
+        }
+        movie_list.append(movie_data)
+
+    return jsonify({"movies": movie_list})
+
+@app.route('/api/v1/posters/<filename>')
+def get_poster(filename):
+    upload_folder = os.path.join(os.getcwd(), app.config['UPLOAD_FOLDER'])
+    print("folder: ", upload_folder)
+    
+    
+    file_path = os.path.join(upload_folder, filename)
+    print("file path: ",file_path)
+    
+    if not os.path.exists(file_path):
+        return jsonify({"error": "File not found"}), 404
+    
+    return send_from_directory(upload_folder, filename)
 
 @app.route('/api/v1/csrf-token', methods=['GET'])
 def get_csrf():

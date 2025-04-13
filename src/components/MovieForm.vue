@@ -1,5 +1,5 @@
 <template>
-    <form id="movieForm" @submit.prevent="saveMovie" enctype="multipart/form-data">
+    <form id="movieForm" @submit.prevent="saveMovie" >
         <div class="form-group mb-3">
         <label for="title" class="form-label">Movie Title</label>
         <input type="text" name="title" id="title" class="form-control" />
