@@ -15,6 +15,8 @@ from app.models import Movie
 from app.forms import MovieForm
 from datetime import datetime
 
+from flask_wtf.csrf import generate_csrf
+
 
 
 ###
@@ -80,8 +82,10 @@ def movies():
         poster = form.poster.data
         filename = secure_filename(poster.filename)
         
-        poster_path = poster.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        poster.save(poster_path)
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+
+        poster.save(file_path)
 
         movie = Movie(
             title = form.title.data,
@@ -107,4 +111,7 @@ def movies():
 
         # flash('Successfully added')
 
+@app.route('/api/v1/csrf-token', methods=['GET'])
+def get_csrf():
+    return jsonify({'csrf_token': generate_csrf()})
 
